@@ -5,16 +5,47 @@ $(document).ready(function (e) {
 
   let url_pedido = window.location.href;
 
-  if(url_pedido === "http://localhost/pedidos/visao/index.php?pagina=visualizar_pedido")
-  {
-    
+  if (url_pedido === "http://localhost/pedidos/visao/index.php?pagina=visualizar_pedido") {
+    $("#mensagem-falha-listar-pedidos").hide();
+    visualizaPedidos("todos", "todos");
   }
 });
 
 
-function visualizaPedidos(filtro,valorFiltro)
-{
-    
+function visualizaPedidos(filtro, valorFiltro) {
+  debugger;
+
+  $.ajax({
+    url: "../api/PedidoAPI.php",
+    dataType: "json",
+    type: "get",
+    data: {
+      processo_pedido: "recebe_consultar_pedidos",
+      filtroPedido: filtro,
+      valorFiltroPedido: valorFiltro,
+    },
+    success: function (retorno_pedidos) {
+      debugger;
+
+      if (retorno_pedidos.lenght > 0) {
+        let recebeTabelaPedidos = document.querySelector("#lista-pedidos");
+
+        for (let indice = 0; indice < retorno_pedidos.length; indice++) 
+        {
+                    
+        }
+      } else {
+        $("#mensagem-falha-listar-pedidos").html("Falha ao consultar pedido:" + retorno_pedidos);
+        $("#mensagem-falha-listar-pedidos").show();
+        $("#mensagem-falha-listar-pedidos").fadeOut(4000);
+      }
+    },
+    error: function (xhr, status, error) {
+      $("#mensagem-falha-listar-pedidos").html("Falha ao consultar pedido:" + error);
+      $("#mensagem-falha-listar-pedidos").show();
+      $("#mensagem-falha-listar-pedidos").fadeOut(4000);
+    },
+  });
 }
 
 $(document).on("focus", "#valor", function (e) {
@@ -87,9 +118,9 @@ $("#gravar").click(function (e) {
         debugger;
 
         if (retorno_gravar > 0) {
-            $("#mensagem-pedido-gravado").html("Pedido cadastrado com sucesso");
-            $("#mensagem-pedido-gravado").show();
-            $("#mensagem-pedido-gravado").fadeOut(4000);
+          $("#mensagem-pedido-gravado").html("Pedido cadastrado com sucesso");
+          $("#mensagem-pedido-gravado").show();
+          $("#mensagem-pedido-gravado").fadeOut(4000);
         } else {
           $("#mensagem-falha-gravar-pedido").html(
             "Falha ao gravar pedido:" + error

@@ -13,9 +13,12 @@
                     </tr>
                 </thead>
                 <tbody id="lista-pedidos">
-                    
+
                 </tbody>
             </table>
         </div>
+    </div>
+
+    <div class="alert alert-warning" role="alert" id="mensagem-falha-listar-pedidos">
     </div>
 </div>

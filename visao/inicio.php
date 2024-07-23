@@ -61,7 +61,7 @@
                 <div class="navbar-nav w-100">
                     <a href="index.html" class="nav-item nav-link active"><i class="bi bi-house me-2"></i>Inicio</a>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Pedidos</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="bi bi-clipboard-data me-2"></i>Pedidos</a>
                         <div class="dropdown-menu bg-transparent border-0">
                             <a href="index.php?pagina=cadastrar_pedido" class="dropdown-item">Cadastrar Pedidos</a>
                             <a href="index.php?pagina=visualizar_pedido" class="dropdown-item">Visualizar Pedidos</a>

@@ -24,5 +24,16 @@ if($_SERVER["REQUEST_METHOD"] === "POST")
             echo json_encode("Favor verificar o preenchimento dos campos");
         }
     }
+}else if($_SERVER["REQUEST_METHOD"] === "GET")
+{
+    if($_GET["processo_pedido"] === "recebe_consultar_pedidos")
+    {
+        $filtroPedido = $_GET["filtroPedido"];
+        $valorFiltroPedido = $_GET["valorFiltroPedido"];
+
+        $resultadoConsultarPedido = $pedidoControladora->ConsultarPedidos($filtroPedido,$valorFiltroPedido);
+
+        echo json_encode($resultadoConsultarPedido);
+    }
 }
 ?>

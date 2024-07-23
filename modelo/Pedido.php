@@ -7,6 +7,8 @@ class Pedido implements PedidoInterface{
     private $nome_produto;
     private $valor;
     private $data_vencimento;
+    private $filtro;
+    private $valor_filtro;
 
     public function setCodigo_Produto($codigo_produto)
     {
@@ -48,14 +50,55 @@ class Pedido implements PedidoInterface{
         return $this->data_vencimento;
     }
 
+    public function setFiltro($filtro)
+    {
+        $this->filtro = $filtro;
+    }
+
+    public function getFiltro()
+    {
+        return $this->filtro;
+    }
+
+    public function setValor_Filtro($valor_filtro)
+    {
+        $this->valor_filtro = $valor_filtro;
+    }
+
+    public function getValor_Filtro()
+    {
+        return $this->valor_filtro;
+    }
+
     public function VisualizarPedidos():array
     {
         $pedidos = array();
         try{
-            $instrucaoVerPedidos = "select * from pedidos";
-            $comandoVerPedidos = Conexao::Obtem()->prepare($instrucaoVerPedidos);
-            $comandoVerPedidos->execute();
-            $pedidos = $comandoVerPedidos->fetchAll(PDO::FETCH_ASSOC);
+            if($this->getFiltro() === "todos" && $this->getValor_Filtro() === "todos")
+            {
+                $instrucaoVerPedidos = "select * from pedidos";
+                $comandoVerPedidos = Conexao::Obtem()->prepare($instrucaoVerPedidos);
+                $comandoVerPedidos->execute();
+                $pedidos = $comandoVerPedidos->fetchAll(PDO::FETCH_ASSOC);
+            }else if($this->getFiltro() === "vencer_hoje" && $this->getValor_Filtro() === "vencer_hoje")
+            {
+                $instrucaoVerPedidos = "select * from pedidos where data_vencimento = CURDATE()";
+                $comandoVerPedidos = Conexao::Obtem()->prepare($instrucaoVerPedidos);
+                $comandoVerPedidos->execute();
+                $pedidos = $comandoVerPedidos->fetchAll(PDO::FETCH_ASSOC);
+            }else if($this->getFiltro() === "vencer_aproximado" && $this->getValor_Filtro() === "vencer_aproximado")
+            {
+                $instrucaoVerPedidos = "select * from pedidos where data_vencimento = CURDATE() + INTERVAL 3 DAY";
+                $comandoVerPedidos = Conexao::Obtem()->prepare($instrucaoVerPedidos);
+                $comandoVerPedidos->execute();
+                $pedidos = $comandoVerPedidos->fetchAll(PDO::FETCH_ASSOC);
+            }else if($this->getFiltro() === "vencer_maior_3" && $this->getValor_Filtro() === "vencer_maior_3")
+            {
+                $instrucaoVerPedidos = "select * from pedidos where data_vencimento > CURDATE() + INTERVAL 3 DAY";
+                $comandoVerPedidos = Conexao::Obtem()->prepare($instrucaoVerPedidos);
+                $comandoVerPedidos->execute();
+                $pedidos = $comandoVerPedidos->fetchAll(PDO::FETCH_ASSOC);
+            }
         }catch(PDOException $exception)
         {
             array_push($pedidos,$exception->getMessage());

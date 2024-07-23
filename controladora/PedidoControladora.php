@@ -16,5 +16,13 @@ class PedidoControladora{
 
         return $this->pedido->CadastrarPedidos();
     }
+
+    public function ConsultarPedidos($filtro,$valorFiltro)
+    {
+        $this->pedido->setFiltro($filtro);
+        $this->pedido->setValor_Filtro($valorFiltro);
+
+        return $this->pedido->VisualizarPedidos();
+    }
 }
 ?>
