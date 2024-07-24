@@ -24,5 +24,20 @@ class PedidoControladora{
 
         return $this->pedido->VisualizarPedidos();
     }
+
+    public function AtualizarValor($valor_codigo_prod,$valor_prod)
+    {
+        $this->pedido->setCodigo_Produto($valor_codigo_prod);
+        $this->pedido->setValor_Produto($valor_prod);
+
+        return $this->pedido->AtualizarValor();
+    }
+
+    public function ExcluirPedidos($valor_codigo_prod)
+    {
+        $this->pedido->setCodigo_Produto($valor_codigo_prod);
+
+        return $this->pedido->ExcluirPedidos();
+    }
 }
 ?>

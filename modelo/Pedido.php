@@ -74,15 +74,9 @@ class Pedido implements PedidoInterface{
     {
         $pedidos = array();
         try{
-            if($this->getFiltro() === "todos" && $this->getValor_Filtro() === "todos")
+            if($this->getFiltro() === "vencido" && $this->getValor_Filtro() === "vencido")
             {
-                $instrucaoVerPedidos = "select * from pedidos";
-                $comandoVerPedidos = Conexao::Obtem()->prepare($instrucaoVerPedidos);
-                $comandoVerPedidos->execute();
-                $pedidos = $comandoVerPedidos->fetchAll(PDO::FETCH_ASSOC);
-            }else if($this->getFiltro() === "vencer_hoje" && $this->getValor_Filtro() === "vencer_hoje")
-            {
-                $instrucaoVerPedidos = "select * from pedidos where data_vencimento = CURDATE()";
+                $instrucaoVerPedidos = "select * from pedidos where data_vencimento < CURDATE()";
                 $comandoVerPedidos = Conexao::Obtem()->prepare($instrucaoVerPedidos);
                 $comandoVerPedidos->execute();
                 $pedidos = $comandoVerPedidos->fetchAll(PDO::FETCH_ASSOC);
@@ -129,6 +123,46 @@ class Pedido implements PedidoInterface{
         }catch(Exception $excecao)
         {
             return $excecao->getMessage();
+        }
+    }
+
+    public function AtualizarValor():string
+    {
+        try{
+            $instrucaoAtualizarValor = "update pedidos set valor = :valor_atualizado where codigo_produto = :valor_codigo_produto";
+            $comandoAtualizarValor = Conexao::Obtem()->prepare($instrucaoAtualizarValor);
+            $comandoAtualizarValor->bindValue(":valor_atualizado",$this->getValor_Produto());
+            $comandoAtualizarValor->bindValue(":valor_codigo_produto",$this->getCodigo_Produto());
+
+            $resultadoAtualizarValor = $comandoAtualizarValor->execute();
+
+            if($resultadoAtualizarValor)
+                return "Desconto gravado";
+            else
+                return "Desconto não foi gravado";
+        }catch (PDOException $exception) {
+            return $exception->getMessage();
+        } catch (Exception $excecao) {
+            return $excecao->getMessage();
+        }
+    }
+
+    public function ExcluirPedidos():string
+    {
+        try{
+            $instrucaoExcluirPedido = "delete from pedidos where codigo_produto = :valor_codigo_produto";
+            $comandoExcluirPedido = Conexao::Obtem()->prepare($instrucaoExcluirPedido);
+            $comandoExcluirPedido->bindValue(":valor_codigo_produto",$this->getCodigo_Produto());
+            $resultadoExcluirPedido = $comandoExcluirPedido->execute();
+
+            if($resultadoExcluirPedido)
+                return "Pedido excluido com sucesso";
+            else
+                return "Pedido não foi excluido com sucesso";
+        }catch (PDOException $exception) {
+            return $exception->getMessage();
+        } catch (Exception $excecao) {
+            return  $excecao->getMessage();
         }
     }
 }
