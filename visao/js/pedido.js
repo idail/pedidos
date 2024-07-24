@@ -14,9 +14,14 @@ $(document).ready(function (e) {
     $("#mensagem-desconto-gravado").hide();
     $("#mensagem-falha-gravar-desconto").hide();
     $("#mensagem-campo-vazio-desconto").hide();
+    $("#mensagem-falha-excluir-pedidos").hide();
+    $("#mensagem-pedido-excluido").hide();
     visualizaPedidos("vencido", "vencido");
   }
 });
+
+let recebeFiltro = "";
+let recebevalorFiltro = "";
 
 function visualizaPedidos(filtro, valorFiltro) {
   debugger;
@@ -32,6 +37,9 @@ function visualizaPedidos(filtro, valorFiltro) {
     },
     success: function (retorno_pedidos) {
       debugger;
+
+      recebeFiltro = filtro;
+      recebevalorFiltro = valorFiltro;
 
       if (retorno_pedidos.length > 0) {
         let recebeTabelaPedidos = document.querySelector("#lista-pedidos");
@@ -113,7 +121,7 @@ function visualizaPedidos(filtro, valorFiltro) {
             "<td>" +
             valorDataVencBR +
             "</td>" +
-            "<td><a href='#'><i class='bi bi-trash' style='font-size:20px;' title='Excluir'></i></a></td>" +
+            "<td><a href='#'><i class='bi bi-trash' style='font-size:20px;' title='Excluir' onclick=excluirPedido(" + retorno_pedidos[indice].codigo_produto + ",event)></i></a></td>" +
             "<td><a href='#'><i class='bi bi-journal-album' style='font-size:20px;' title='Alterar'></i></a></td>" +
             url_desconto;
           ("</tr>");
@@ -217,6 +225,52 @@ $("#gravar-desconto").click(function (e) {
     });
   }
 });
+
+function excluirPedido(valorCodigoPedido,e)
+{
+    e.preventDefault();
+
+    debugger;
+
+    let recebeRespostaExcluirPedido = window.confirm("Tem certeza que deseja excluir o pedido?");
+
+    console.log(recebeFiltro + recebevalorFiltro);
+
+    if(recebeRespostaExcluirPedido)
+    {
+      $.ajax({
+        url: "../api/PedidoAPI.php",
+        type: "DELETE",
+        dataType: "json",
+        cache: false,
+        data: JSON.stringify({
+          processo_pedido: "recebe_exclui_pedido",
+          valor_codigo_pedido_exclui: valorCodigoPedido,
+        }),
+        success: function (retorno_excluir) 
+        {
+          debugger;
+
+          if(retorno_excluir === "Pedido excluido com sucesso")
+          {
+            $("#mensagem-pedido-excluido").html(retorno_excluir);
+            $("#mensagem-pedido-excluido").show();
+            $("#mensagem-pedido-excluido").fadeOut(4000);
+
+            visualizaPedidos(recebeFiltro,recebevalorFiltro);
+          }
+        },
+        error:function(xhr,status,error)
+        {
+          $("#mensagem-falha-excluir-pedidos").html("Falha ao excluir pedido: " + error);
+          $("#mensagem-falha-excluir-pedidos").show();
+          $("#mensagem-falha-excluir-pedidos").fadeOut(4000);
+        },
+      });
+    }else{
+      return;
+    }
+}
 
 function calcularDatas(primeira_data, segunda_data) {
   /*let diferençaMilisegundos = primeira_data - segunda_data;

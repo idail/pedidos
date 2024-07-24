@@ -36,4 +36,10 @@
 
     <div class="alert alert-info mt-3" role="alert" id="mensagem-campo-vazio-listar-pedidos">
     </div>
+
+    <div class="alert alert-warning mt-3" role="alert" id="mensagem-falha-excluir-pedidos">
+    </div>
+
+    <div class="alert alert-info mt-3" role="alert" id="mensagem-pedido-excluido">
+    </div>
 </div>

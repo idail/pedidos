@@ -52,7 +52,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST")
 
     if(!empty($processoPedido->processo_pedido === "recebe_exclui_pedido"))
     {
-        $resultadoExcluirPedido = $pedidoControladora->ExcluirPedidos($processoPedido->valor_codigo_pedido);
+        $resultadoExcluirPedido = $pedidoControladora->ExcluirPedidos($processoPedido->valor_codigo_pedido_exclui);
 
         echo json_encode($resultadoExcluirPedido);
     }else{
