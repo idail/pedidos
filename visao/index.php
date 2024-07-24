@@ -1,8 +1,4 @@
 <?php
-// if(!empty($_GET))
-// {
-//     echo $_GET;
-// }
 
 $url = (isset($_GET['pagina'])) ? $_GET['pagina'] : 'inicio';
 
@@ -13,7 +9,5 @@ if (!empty($url[0])) {
     if ($url[0] === "inicio" || $url[0] === "cadastrar_pedido" || $url[0] === "visualizar_pedido") {
         require("inicio.php");
     }
-} else {
-    //var_dump($url);
 }
 ?>
