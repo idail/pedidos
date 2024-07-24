@@ -39,5 +39,15 @@ class PedidoControladora{
 
         return $this->pedido->ExcluirPedidos();
     }
+
+    public function AlterarPedido($valor_nome_prod,$valor_prod,$valor_vencimento_prod,$valor_codigo_prod)
+    {
+        $this->pedido->setCodigo_Produto($valor_codigo_prod);
+        $this->pedido->setNome_Produto($valor_nome_prod);
+        $this->pedido->setValor_Produto($valor_prod);
+        $this->pedido->setData_Vencimento($valor_vencimento_prod);
+
+        return $this->pedido->AlterarPedido();
+    }
 }
 ?>

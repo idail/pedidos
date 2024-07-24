@@ -16,6 +16,9 @@ $(document).ready(function (e) {
     $("#mensagem-campo-vazio-desconto").hide();
     $("#mensagem-falha-excluir-pedidos").hide();
     $("#mensagem-pedido-excluido").hide();
+    $("#mensagem-pedido-alterado").hide();
+    $("#mensagem-falha-alterar-pedido").hide();
+    $("#mensagem-campo-vazio-alterar-pedido").hide();
     visualizaPedidos("vencido", "vencido");
   }
 });
@@ -122,7 +125,8 @@ function visualizaPedidos(filtro, valorFiltro) {
             valorDataVencBR +
             "</td>" +
             "<td><a href='#'><i class='bi bi-trash' style='font-size:20px;' title='Excluir' onclick=excluirPedido(" + retorno_pedidos[indice].codigo_produto + ",event)></i></a></td>" +
-            "<td><a href='#'><i class='bi bi-journal-album' style='font-size:20px;' title='Alterar'></i></a></td>" +
+            "<td><a href='#'><i class='bi bi-journal-album' style='font-size:20px;' data-param-codigo=" + retorno_pedidos[indice].codigo_produto + " data-param-nome='" + retorno_pedidos[indice].nome_produto + "'" +
+            "data-param-valor='" + valorPedidoBR + "' data-param-data='" + valorDataVencBR + "' data-bs-toggle='modal' data-bs-target='#alterar-pedido' data-backdrop='static' title='Alterar' id='carregaAlterarPedido'></i></a></td>" +
             url_desconto;
           ("</tr>");
         }
@@ -211,6 +215,8 @@ $("#gravar-desconto").click(function (e) {
           $("#mensagem-desconto-gravado").html(retorno_desconto);
           $("#mensagem-desconto-gravado").show();
           $("#mensagem-desconto-gravado").fadeOut(4000);
+
+          visualizaPedidos(recebeFiltro,recebevalorFiltro);
         }else{
           $("#mensagem-falha-gravar-desconto").html("Falha ao gravar desconto:" + retorno_desconto);
           $("#mensagem-falha-gravar-desconto").show();
@@ -272,11 +278,30 @@ function excluirPedido(valorCodigoPedido,e)
     }
 }
 
-function calcularDatas(primeira_data, segunda_data) {
-  /*let diferençaMilisegundos = primeira_data - segunda_data;
-  let dias = diferençaMilisegundos / (1000 * 60 * 60 * 24);
-  return dias;*/
+$(document).on("click","#carregaAlterarPedido",function(e){
+  e.preventDefault();
 
+  debugger;
+
+  let recebeCodigoPedido = $(this).data("param-codigo");
+
+  let recebeNomePedido = $(this).data("param-nome");
+
+  let recebValorPedido = $(this).data("param-valor");
+
+  let recebeDataPedido = $(this).data("param-data");
+
+  let recebeDataAmericana = recebeDataPedido.split("/")
+  .reverse()
+  .join("-");
+
+  $("#nome-produto-alterar").val(recebeNomePedido);
+  $("#valor-alterar").val(recebValorPedido);
+  $("#data-vencimento-alterar").val(recebeDataAmericana);
+  $("#codigo-produto-alterar").val(recebeCodigoPedido);
+});
+
+function calcularDatas(primeira_data, segunda_data) {
   return (
     Math.abs(
       new Date(primeira_data).getTime() - new Date(segunda_data).getTime()
@@ -296,6 +321,16 @@ $(document).on("focus", "#valor", function (e) {
 });
 
 $(document).on("focus", "#valor-desconto", function (e) {
+  e.preventDefault();
+
+  $(this).maskMoney({
+    prefix: "R$",
+    thousands: ".",
+    decimal: ",",
+  });
+});
+
+$(document).on("focus", "#valor-alterar", function (e) {
   e.preventDefault();
 
   $(this).maskMoney({
@@ -382,6 +417,94 @@ $("#gravar").click(function (e) {
         );
         $("#mensagem-falha-gravar-pedido").show();
         $("#mensagem-falha-gravar-pedido").fadeOut(4000);
+      },
+    });
+  }
+});
+
+$("#alteracao-pedido").click(function(e){
+  e.preventDefault();
+
+  debugger;
+
+  let recebeCodigoPedido = $("#codigo-produto-alterar").val();
+  let recebeNomePedido = $("#nome-produto-alterar").val();
+  let recebeValorPedido = $("#valor-alterar").val();
+  let recebeVencimentoPedido = $("#data-vencimento-alterar").val();
+
+  if(recebeNomePedido === "")
+  {
+    $("#mensagem-campo-vazio-alterar-pedido").html("Favor preencher o nome do produto");
+    $("#mensagem-campo-vazio-alterar-pedido").show();
+    $("#mensagem-campo-vazio-alterar-pedido").fadeOut(4000);
+    $("#nome-produto-alterar").focus();
+  }else if(recebeValorPedido === "")
+  {
+    $("#mensagem-campo-vazio-alterar-pedido").html("Favor preencher o valor do produto");
+    $("#mensagem-campo-vazio-alterar-pedido").show();
+    $("#mensagem-campo-vazio-alterar-pedido").fadeOut(4000);
+    $("#valor-alterar").focus();
+  }else if(recebeVencimentoPedido === "")
+  {
+    $("#mensagem-campo-vazio-alterar-pedido").html("Favor preencher a data de vencimento do produto");
+    $("#mensagem-campo-vazio-alterar-pedido").show();
+    $("#mensagem-campo-vazio-alterar-pedido").fadeOut(4000);
+    $("#data-vencimento-alterar").focus();
+  }else{
+
+    let valorProduCortado = recebeValorPedido.split("R$");
+
+    let valorProdNumerico = valorProduCortado[1];
+
+    let valorProdNumero = valorProdNumerico.replace(/,/g, ".");
+
+    let stringTemporario = valorProdNumero.replace(/\.(?=[^.]*$)/, "TEMP");
+
+    stringTemporario = stringTemporario.replace(/\./g, "");
+
+    let stringDecimal = stringTemporario.replace("TEMP", ".");
+
+    let valorProdDecimal = parseFloat(stringDecimal);
+    
+    let dataVencimentoAmericana = recebeVencimentoPedido.split("/")
+    .reverse()
+    .join("-");
+
+    $.ajax({
+      url: "../api/PedidoAPI.php",
+      type: "post",
+      dataType: "json",
+      data: {
+        valor_nome_produto_alterar: recebeNomePedido,
+        valor_produto_alterar: valorProdDecimal,
+        valor_vencimento_produto_alterar: dataVencimentoAmericana,
+        valor_codigo_produto_alterar:recebeCodigoPedido,
+        processo_pedido: "recebe_alterar_pedido",
+        metodo:"PUT",
+      },
+      success: function (retorno_alterar) {
+        debugger;
+
+        if (retorno_alterar === "Pedido alterado com sucesso") {
+          $("#mensagem-pedido-alterado").html(retorno_alterar);
+          $("#mensagem-pedido-alterado").show();
+          $("#mensagem-pedido-alterado").fadeOut(4000);
+
+          visualizaPedidos(recebeFiltro,recebevalorFiltro);
+        } else {
+          $("#mensagem-falha-alterar-pedido").html(
+            "Falha ao gravar pedido:" + error
+          );
+          $("#mensagem-falha-alterar-pedido").show();
+          $("#mensagem-falha-alterar-pedido").fadeOut(4000);
+        }
+      },
+      error: function (xhr, status, error) {
+        $("#mensagem-falha-alterar-pedido").html(
+          "Falha ao gravar pedido:" + error
+        );
+        $("#mensagem-falha-alterar-pedido").show();
+        $("#mensagem-falha-alterar-pedido").fadeOut(4000);
       },
     });
   }

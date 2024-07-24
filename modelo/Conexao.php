@@ -3,10 +3,6 @@
 class Conexao{
     
     public static $conexao;
-    private static $servidor = "localhost";
-    private static $banco = "pedidos";
-    private static $senha = "";
-    private static $usuario = "";
     
     public static function Obtem()
     {
@@ -15,7 +11,6 @@ class Conexao{
         {
             try{
                 self::$conexao = new PDO("mysql:dbname=pedidos;host=localhost","root","");
-                //self::$conexao = new PDO("mysql:dbname=".self::$banco.";host=".self::$servidor.",".self::$usuario.",".self::$senha."");
                 self::$conexao->exec('SET CHARACTER SET utf8');
     
                 return self::$conexao;

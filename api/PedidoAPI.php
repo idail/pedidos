@@ -34,6 +34,19 @@ if($_SERVER["REQUEST_METHOD"] === "POST")
 
             echo json_encode($resultadoAtualizarValor);
         }
+    }else if($_POST["processo_pedido"] === "recebe_alterar_pedido")
+    {
+        if($_POST["metodo"] === "PUT")
+        {
+            $valorNomeProduto = $_POST["valor_nome_produto_alterar"];
+            $valorProduto = $_POST["valor_produto_alterar"];
+            $valorVencimentoProduto = $_POST["valor_vencimento_produto_alterar"];
+            $valorCodigoProduto = $_POST["valor_codigo_produto_alterar"];
+
+            $resultadoAlterarProduto = $pedidoControladora->AlterarPedido($valorNomeProduto,$valorProduto,$valorVencimentoProduto,$valorCodigoProduto);
+
+            echo json_encode($resultadoAlterarProduto);
+        }
     }
 }else if($_SERVER["REQUEST_METHOD"] === "GET")
 {

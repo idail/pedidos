@@ -165,5 +165,28 @@ class Pedido implements PedidoInterface{
             return  $excecao->getMessage();
         }
     }
+
+    public function AlterarPedido():string
+    {
+        try{
+            $instrucaoAlterarPedido = "update pedidos set nome_produto = :valor_nome_produto,valor = :valor_produto,data_vencimento = :valor_data_vencimento where codigo_produto = :valor_codigo_produto";
+            $comandoAlterarPedido = Conexao::Obtem()->prepare($instrucaoAlterarPedido);
+            $comandoAlterarPedido->bindValue(":valor_nome_produto",$this->getNome_Produto());
+            $comandoAlterarPedido->bindValue(":valor_produto",$this->getValor_Produto());
+            $comandoAlterarPedido->bindValue(":valor_data_vencimento",$this->getData_Vencimento());
+            $comandoAlterarPedido->bindValue(":valor_codigo_produto",$this->getCodigo_Produto());
+
+            $resultadoAlterarPedido = $comandoAlterarPedido->execute();
+
+            if($resultadoAlterarPedido)
+                return "Pedido alterado com sucesso";
+            else
+                return "Pedido não foi alterado";
+        }catch (PDOException $exception) {
+            return $exception->getMessage();
+        } catch (Exception $excecao) {
+            return $excecao->getMessage();
+        }
+    }
 }
 ?>
